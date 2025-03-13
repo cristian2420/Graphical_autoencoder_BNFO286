@@ -12,26 +12,16 @@ split_index = len(data.columns) // 2
 rep1 = data.iloc[:, :split_index]
 rep2 = data.iloc[:, split_index:] 
 
-def row_to_dataframe(row_index, df):
+def row_to_dataframe(row_index, df, n_fractions):
     """
     Given a row index and a DataFrame, create a new DataFrame with columns 'time' and 'signal'.
-    The 'time' column contains values from 1 to 72, and the 'signal' column contains the values from the specified row.
-    
-    Parameters:
-    row_index (int): The index of the row to extract values from.
-    df (pd.DataFrame): The input DataFrame.
-    
-    Returns:
-    pd.DataFrame: A new DataFrame with 'time' and 'signal' columns.
     """
     if row_index not in df.index:
         raise ValueError("Row index out of range")
     
     signal_values = df.loc[row_index].values  # Extract the row values
-    if len(signal_values) != 72:
-        raise ValueError("Row does not contain exactly 72 elements")
     
-    time_values = list(range(1, 73))  # Generate time values from 1 to 72
+    time_values = list(range(1, n_fractions))
     
     return pd.DataFrame({'time': time_values, 'signal': signal_values})
 
@@ -48,7 +38,7 @@ def subprocess(i, df):
     """Processes a single protein."""
     row_df = row_to_dataframe(i, df) 
     try:
-        peaks_dict = process_chromatograms(row_df, i, prominence=0.20)
+        peaks_dict = process_chromatograms(row_df, i, prominence)
         return i, peaks_dict
     except:
         return i, "error"
