@@ -162,17 +162,12 @@ def construct_network(overlap_df):
     return list(network), indices
 
 def consensus_network(networks_list):
-
     consensus_network = []
     network_sets = [set(n) for n in networks_list[1:]]
 
-    for a,b in networks_list[0]:
-        for network in network_sets:
-            if (a,b) in network or (b,a) in network:
-                continue
-            else:
-                break
-            consensus_network.append((a,b))
+    for a, b in networks_list[0]:
+        if all((a, b) in network or (b, a) in network for network in network_sets):
+            consensus_network.append((a, b))  # Only add if present in all networks
 
     return consensus_network
 
